@@ -2,64 +2,67 @@
 class superset::install inherits superset {
   require superset::config
 
-  exec { 'superset upgrade':
+  $supersets.each |Hash $superset| {
+
+  exec { "${superset['name']} superset upgrade":
     command     => join([
-      "${base_dir}/venv/bin/superset db upgrade",
+      "${superset['base_dir']}/venv/bin/superset db upgrade",
     ], ' '),
-    cwd         => $base_dir,
+    cwd         => $superset['base_dir'],
     user        => $owner,
     group       => $group,
     path        => '/usr/sbin:/usr/bin:/sbin:/bin',
     environment => [
-      "PYTHONPATH=${base_dir}",
-      "SUPERSET_CONFIG_PATH=${base_dir}/superset_config.py",
+      "PYTHONPATH=${superset['base_dir']}",
+      "SUPERSET_CONFIG_PATH=${superset['base_dir']}/superset_config.py",
       'FLASK_APP=superset'
     ],
   }
 
-  exec { 'superset create-admin':
+  exec { "${superset['name']} superset create-admin":
     command     => join([
-      "${base_dir}/venv/bin/superset fab create-admin",
+      "${superset['base_dir']}/venv/bin/superset fab create-admin",
       "--username ${admin_user}",
       "--firstname admin",
       "--lastname admin",
       "--email ${admin_email}",
       "--password ${admin_pass}",
     ], ' '),
-    cwd         => $base_dir,
+    cwd         => $superset['base_dir'],
     user        => $owner,
     group       => $group,
     path        => '/usr/sbin:/usr/bin:/sbin:/bin',
     environment => [
-      "PYTHONPATH=${base_dir}",
-      "SUPERSET_CONFIG_PATH=${base_dir}/superset_config.py",
+      "PYTHONPATH=${superset['base_dir']}",
+      "SUPERSET_CONFIG_PATH=${superset['base_dir']}/superset_config.py",
       'FLASK_APP=superset'
     ],
-    require     => Exec['superset upgrade']
+    require     => Exec["${superset['name']} superset upgrade"]
   }
 
-  exec { 'superset init':
+  exec { "${superset['name']} superset init":
     command     => join([
-      "${base_dir}/venv/bin/superset init",
+      "${superset['base_dir']}/venv/bin/superset init",
     ], ' '),
-    cwd         => $base_dir,
+    cwd         => $superset['base_dir'],
     user        => $owner,
     group       => $group,
     path        => '/usr/sbin:/usr/bin:/sbin:/bin',
     environment => [
-      "PYTHONPATH=${base_dir}",
-      "SUPERSET_CONFIG_PATH=${base_dir}/superset_config.py",
+      "PYTHONPATH=${superset['base_dir']}",
+      "SUPERSET_CONFIG_PATH=${superset['base_dir']}/superset_config.py",
       'FLASK_APP=superset'
     ],
-    require     => Exec['superset create-admin']
+    require     => Exec["${superset['name']} superset create-admin"]
   }
 
   if ($logo_path) {
-    file { "${base_dir}/venv/lib/python${facts['python3_release']}/site-packages/superset/static/assets/images/logo.png":
+    file { "${superset['base_dir']}/venv/lib/python${facts['python3_release']}/site-packages/superset/static/assets/images/logo.png":
       ensure => present,
       source => $logo_path,
       owner  => $owner,
       group  => $group
     }
+  }
   }
 }

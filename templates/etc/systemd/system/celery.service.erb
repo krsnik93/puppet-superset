@@ -6,8 +6,8 @@ After=network.target
 Type=forking
 User=<%= @owner %>
 Group=<%= @group %>
-EnvironmentFile=/etc/conf.d/celery
-WorkingDirectory=<%= @base_dir %>
+EnvironmentFile=/etc/conf.d/celery-<%= @superset['name'] %>
+WorkingDirectory=<%= @superset['base_dir'] %>
 ExecStart=/bin/sh -c '${CELERY_BIN} -A $CELERY_APP multi start $CELERYD_NODES \
     --pidfile=${CELERYD_PID_FILE} --logfile=${CELERYD_LOG_FILE} \
     --loglevel="${CELERYD_LOG_LEVEL}" $CELERYD_OPTS'

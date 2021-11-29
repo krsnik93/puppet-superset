@@ -19,7 +19,7 @@ CURRENT_DIR = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_FOLDER = CURRENT_DIR + '/app/static/uploads/'
 IMG_UPLOAD_FOLDER = CURRENT_DIR + '/app/static/uploads/'
 
-SQLALCHEMY_DATABASE_URI = 'postgresql://<%= @db_user %>:<%= @db_pass %>@<%= @db_host %>/<%= @db_name %>'
+SQLALCHEMY_DATABASE_URI = 'postgresql://<%= @superset['db_user'] %>:<%= @superset['db_pass'] %>@<%= @superset['db_host'] %>/<%= @superset['db_name'] %>'
 ROW_LIMIT = <%= @row_limit %>
 
 <% if @feature_flags -%>

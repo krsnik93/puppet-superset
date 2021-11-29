@@ -1,6 +1,7 @@
 ---
 superset::admin_user: admin
-superset::base_dir: /opt/superset
+superset::base_dirs:
+  - /opt/superset
 superset::owner: fedora
 superset::group: fedora
 superset::db_host: localhost

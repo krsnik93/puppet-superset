@@ -10,11 +10,13 @@ class superset::config inherits superset {
     default => $ldap_user_filter
   }
 
-  file { "${base_dir}/superset_config.py":
-    ensure  => present,
-    content => template("${module_name}/opt/superset/superset_config.py.erb"),
-    owner   => $owner,
-    group   => $group,
-    notify  => [Service['gunicorn'], Service['celery']]
+  $supersets.each |Hash $superset| {
+    file { "${superset['base_dir']}/superset_config.py":
+      ensure  => present,
+      content => template("${module_name}/opt/superset/superset_config.py.erb"),
+      owner   => $owner,
+      group   => $group,
+      notify  => [Service["gunicorn-${superset['name']}"], Service["celery-${superset['name']}"]]
+    }
   }
 }
